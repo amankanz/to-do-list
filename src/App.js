@@ -17,6 +17,7 @@ export default function App() {
 
 function TodoList() {
   const [todoItems, setTodoItems] = useState(initial_todos);
+  const [sortBy, setSortBy] = useState("input");
 
   function handleAddtodoItem(todoItem) {
     setTodoItems((todoItems) => [...todoItems, todoItem]);
@@ -36,11 +37,34 @@ function TodoList() {
     );
   }
 
+  function handleClearList() {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete all tasks?"
+    );
+    if (confirmed) setTodoItems([]);
+  }
+
+  let sortedItems;
+
+  if (sortBy === "input") sortedItems = todoItems;
+
+  if (sortBy === "description") {
+    sortedItems = todoItems
+      .slice()
+      .sort((a, b) => a.text.localeCompare(b.text));
+  }
+
+  if (sortBy === "completed") {
+    sortedItems = todoItems
+      .slice()
+      .sort((a, b) => Number(a.completed) - Number(b.completed));
+  }
+
   return (
     <section>
       <AddTodoForm onAddtodo={handleAddtodoItem} />
       <ul>
-        {todoItems.map((todoItem) => (
+        {sortedItems.map((todoItem) => (
           <TodoItem
             key={todoItem.id}
             todo={todoItem}
@@ -49,6 +73,15 @@ function TodoList() {
           />
         ))}
       </ul>
+
+      <div className="action">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Sort by input order</option>
+          <option value="description">Sort by description</option>
+          <option value="completed">Sort by completed status</option>
+        </select>
+        <button onClick={handleClearList}>Clear List</button>
+      </div>
 
       <Stats todoItems={todoItems} />
     </section>
