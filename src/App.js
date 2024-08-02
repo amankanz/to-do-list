@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 const initial_todos = [
-  { text: "Buy groceries", completed: true, id: 2345 },
+  { text: "Buy groceries", completed: false, id: 2345 },
   { text: "Walk the dog", completed: false, id: 2327 },
   { text: "Read a book", completed: false, id: 2300 },
 ];
@@ -17,7 +17,6 @@ export default function App() {
 
 function TodoList() {
   const [todoItems, setTodoItems] = useState(initial_todos);
-  // const [deleteItem, setDeleteItem] = useState()
 
   function handleAddtodoItem(todoItem) {
     setTodoItems((todoItems) => [...todoItems, todoItem]);
@@ -51,7 +50,7 @@ function TodoList() {
         ))}
       </ul>
 
-      <Stats />
+      <Stats todoItems={todoItems} />
     </section>
   );
 }
@@ -86,7 +85,7 @@ function AddTodoForm({ onAddtodo }) {
     };
 
     onAddtodo(new_todo);
-    console.log(new_todo);
+    // console.log(new_todo);
 
     setNewTask("");
   }
@@ -103,11 +102,27 @@ function AddTodoForm({ onAddtodo }) {
   );
 }
 
-function Stats() {
+function Stats({ todoItems }) {
+  if (!todoItems.length) {
+    return (
+      <p className="stats">
+        <em>Start adding some tasks to your To-Do list 🚀</em>
+      </p>
+    );
+  }
+
+  const num_tasks = todoItems.length;
+  const num_completed_tasks = todoItems.filter(
+    (todoItem) => todoItem.completed
+  ).length;
+  const percentage = Math.round((num_completed_tasks / num_tasks) * 100);
   return (
     <footer>
       <em>
-        💼 You have X tasks on your list, and you already completed X (X%)
+        {percentage === 100
+          ? `You got everything done! Felicitations! 🥳 `
+          : `
+        📝 You have ${num_tasks} tasks on your list, and you already completed ${num_completed_tasks}(${percentage}%)`}
       </em>
     </footer>
   );
